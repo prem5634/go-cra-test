@@ -10,6 +10,9 @@ def mul(n1, n2):
 def div(n1, n2):
     return n1 / n2
 
+def div(n1, n2):
+    return n1 / 0
+
 print("Please select operation -\n"
       "1. Add\n"
       "2. Subtract\n"
@@ -28,20 +31,8 @@ elif sel == 2:
 elif sel == 3:
     print(n1, "*", n2, "=", mul(n1, n2))
 elif sel == 4:
-    print(n1, "/", n2, "=", div(n1, n2))
+    print(n1, "//", n2, "=", div(n1, 0))
 else:
     print("Invalid input")
 
 
-def convert_str_to_bool(value: str, default: bool) -> bool:
-    try:
-        if value is None:
-            return default
-        if value.lower() == 'true':
-            return True
-        elif value.lower() == 'false':
-            return False
-        else:
-            return default
-    except Exception as e:
-        return default
