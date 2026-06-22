@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package test.v1;
+
+option go_package = "gitlab.com/prembito/go-cra-test/proto/test/v1;testv1";
+
+// User holds account fields with intentionally bad naming for buf lint testing.
+message User {
+  string userName = 1;      // FIELD_LOWER_SNAKE_CASE (should be user_name)
+  string emailAddress = 2;  // FIELD_LOWER_SNAKE_CASE (should be email_address)
+  int32 ID = 3;             // FIELD_LOWER_SNAKE_CASE (should be id)
+}
+
+// Status uses non-conforming enum value names.
+enum Status {
+  UNKNOWN = 0;  // ENUM_ZERO_VALUE_SUFFIX + ENUM_VALUE_PREFIX (want STATUS_UNSPECIFIED)
+  ACTIVE = 1;   // ENUM_VALUE_PREFIX (want STATUS_ACTIVE)
+}
+
+// userService violates service/RPC naming conventions.
+service userService {                  // SERVICE_PASCAL_CASE / SERVICE_SUFFIX
+  rpc getUser(User) returns (User);    // RPC_PASCAL_CASE + RPC_REQUEST/RESPONSE_STANDARD_NAME
+}
