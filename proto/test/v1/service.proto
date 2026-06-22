@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package test.v1;
+
+option go_package = "gitlab.com/prembito/go-cra-test/proto/test/v1;testv1";
+
+// GreetRequest is the request for the Greet RPC.
+message GreetRequest {
+  string user_name = 1;
+}
+
+// GreetResponse is the response for the Greet RPC.
+message GreetResponse {
+  string greeting = 1;
+}
+
+// GreeterService greets users.
+service GreeterService {
+  // Greet returns a greeting for the given user.
+  rpc Greet(GreetRequest) returns (GreetResponse);
+}

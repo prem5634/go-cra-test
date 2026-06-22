@@ -1,0 +1,7 @@
+{
+  "name": "go-cra-test",
+  "version": "1.0.0",
+  "description": "Fixture repo for exercising go-cra-tools tool flows.",
+  "main": "index.js",
+  "license": "MIT"
+}

@@ -1,0 +1,13 @@
+# Go build output
+/go-cra-test
+*.exe
+*.test
+*.out
+
+# Node
+/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
