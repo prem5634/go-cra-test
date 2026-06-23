@@ -3,5 +3,10 @@
   "version": "1.0.0",
   "description": "Fixture repo for exercising go-cra-tools tool flows.",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "4.17.11",
+    "minimist": "1.2.0",
+    "axios": "0.21.0"
+  }
 }
