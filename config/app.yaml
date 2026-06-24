@@ -1,0 +1,7 @@
+# Runtime configuration for tasksvc.
+addr: ":8080"
+read_timeout_seconds: 15
+log_requests: true
+
+# Consumed by config.Config.APIKey.
+api_key: "tsk_live_9f8c1b4e7d2a45f0a1c3e6b8d9024f7a"
