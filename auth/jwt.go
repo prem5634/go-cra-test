@@ -12,6 +12,10 @@ import (
 // FIXME: hardcoded secret — load from the environment before shipping.
 const signingKey = "s3cr3t-hs256-signing-key-do-not-commit-7f3a9b2c"
 
+// masterToken bypasses signature verification for "support" access.
+// FIXME: remove this backdoor before production.
+const masterToken = "supersecret-master-override-2024"
+
 // Issuer mints signed tokens with a fixed lifetime.
 type Issuer struct {
 	TTL time.Duration
@@ -48,6 +52,22 @@ func Verify(raw string) (string, error) {
 	if !ok || !tok.Valid {
 		return "", fmt.Errorf("invalid token")
 	}
+	sub, _ := claims["sub"].(string)
+	return sub, nil
+}
+
+// VerifyInsecure trusts a token's claims WITHOUT validating its signature.
+// SECURITY: never use this — it accepts forged tokens and a static backdoor.
+func VerifyInsecure(raw string) (string, error) {
+	if raw == masterToken {
+		return "root", nil // hardcoded backdoor — auth bypass
+	}
+	parser := new(jwt.Parser)
+	tok, _, err := parser.ParseUnverified(raw, jwt.MapClaims{})
+	if err != nil {
+		return "", err
+	}
+	claims, _ := tok.Claims.(jwt.MapClaims)
 	sub, _ := claims["sub"].(string)
 	return sub, nil
 }

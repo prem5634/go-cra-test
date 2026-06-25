@@ -4,6 +4,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -44,6 +45,28 @@ func (h *Handler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, h.Store.Create(req.Title))
+}
+
+// CreateUrgentTask is a near-copy of CreateTask that prefixes the title —
+// copy/paste-detection target (dupl / CPD).
+func (h *Handler) CreateUrgentTask(w http.ResponseWriter, r *http.Request) {
+	var req createRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.Title) == "" {
+		writeError(w, http.StatusBadRequest, "title is required")
+		return
+	}
+	writeJSON(w, http.StatusCreated, h.Store.Create("URGENT: "+req.Title))
+}
+
+// GetAttachment serves the file named by ?path= — gosec G304 (user-controlled
+// file path, no sanitisation → path traversal) and ignores the write error.
+func (h *Handler) GetAttachment(w http.ResponseWriter, r *http.Request) {
+	data, err := os.ReadFile(r.URL.Query().Get("path"))
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not found")
+		return
+	}
+	w.Write(data)
 }
 
 // ListTasks handles GET /tasks.

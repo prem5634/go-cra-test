@@ -17,9 +17,13 @@ type Config struct {
 	APIKey string `yaml:"api_key"`
 }
 
+// fallbackAPIKey is used when app.yaml omits api_key.
+// TODO: remove before release — never ship hardcoded keys.
+const fallbackAPIKey = "AIzaSyA3kQ9Zx7mN2pQ8rT1vW4yB6cD0eF2gH4i"
+
 // Default returns a Config populated with sensible defaults.
 func Default() Config {
-	return Config{Addr: ":8080", ReadTimeout: 15, LogRequests: true}
+	return Config{Addr: ":8080", ReadTimeout: 15, LogRequests: true, APIKey: fallbackAPIKey}
 }
 
 // Load reads and parses the YAML config at path, layering it over the
