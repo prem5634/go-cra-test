@@ -1,0 +1,150 @@
+type: object
+description: "============================= IMPORTANT =============================\nRename this file to \".bito.yaml\" and place it in the root of your repository's source branch.\nThis will override your review settings for this particular repository.\nFor more information, please visit: https://docs.bito.ai/ai-code-reviews-in-git/agent-settings/repo-level-settings\n====================================================================="
+properties:
+  suggestion_mode:
+    type: string
+    enum: [essential, comprehensive]
+    description: "Controls verbosity of reviews:\n- essential: Only critical issues are posted inline; other issues appear in the summary under \"Additional issues\".\n- comprehensive: Prioritizes exhaustive feedback.\nValid values: essential | comprehensive"
+    default: essential
+
+  post_description:
+    type: boolean
+    description: "Automatically create summary of changes and append to your existing summary. Valid values : true | false"
+    default: true
+
+  post_changelist:
+    type: boolean
+    description: "Reviews will include a table listing all changed files and implemented changes. Valid values : true | false"
+    default: true
+
+  include_source_branches:
+    type: csv
+    items:
+      type: regex
+    description: "Source branches for which Bito automatically reviews pull requests.\nComma-separated GLOB/regex patterns, e.g.: \"feature/*, release/*, main\""
+    default:
+
+  include_target_branches:
+    type: csv
+    items:
+      type: regex
+    description: "Target branches for which Bito automatically reviews pull requests.\nComma-separated GLOB/regex patterns, e.g.: \"feature/*, release/*, main\"\nUse \"*\" to include all target branches."
+    default:
+
+  exclude_files:
+    type: csv
+    items:
+      type: regex
+    description: "Comma-separated file path GLOB patterns to exclude from code reviews.\nExamples: \"*.md, *.yaml, config/*\""
+    default:
+
+  exclude_draft_pr:
+    type: boolean
+    description: "Exclude draft PRs from being reviewed automatically. Valid values : true | false"
+    default: true
+
+  secret_scanner_feedback:
+    type: boolean
+    description: "Detects and reports secrets left in code changes. Valid values : true | false"
+    default: true
+
+  linters_feedback:
+    type: boolean
+    description: "Run Linting tools during code reviews. Valid values : true | false"
+    default: true
+
+  dependency_check.enabled:
+    type: boolean
+    description: "Run Dependency Check analysis during code reviews. Valid values : true | false"
+    default: true
+
+  static_analysis.fb_infer.enabled:
+    type: boolean
+    description: "Run Static Analysis tools during code reviews for providing better feedback. Valid values : true | false"
+    default: true
+
+  sequence_diagram_enabled:
+    type: boolean
+    description: "When enabled, Bito will generate interaction diagrams during code reviews to visualize the architecture and impacted components in the submitted changes.\nSupported for Github and Gitlab.\nValid values: true | false"
+    default: true
+
+  repo_level_guidelines_enabled:
+    type: boolean
+    description: "When enabled, Bito will automatically detect and use best-practice guidelines from agent configuration files such as CLAUDE.md, AGENTS.md, GEMINI.md, .cursor/rules, or .windsurf/rules during code reviews.\nValid values: true | false"
+    default: true
+
+  negative_rules_enabled:
+    type: boolean
+    description: "When enabled, Bito will reduce recommending suggestions that are consistently unaddressed. Critical suggestions may still be made.\nValid values: true | false"
+    default: true
+
+  labels_excluded:
+    type: csv
+    items:
+      type: regex
+    description: "List of labels that, if present on a PR/MR, skip automatic review. \nExample: \"wip, do-not-review, chore, size/*\""
+    default:
+
+  functional_validation_enabled:
+    type: boolean
+    description: "Automatically validate pull requests against Jira ticket referenced in PR description, title, or branch name.\nJira Integration must be completed from UI for this to work.\nValid values: true | false"
+    default: true
+
+  post_as_request_changes:
+    type: boolean
+    description: "Post feedback as 'Request changes' comments during code review.\nDepending on your Git provider settings, you will have to resolve all comments before merging.\nFor GitHub, this will automatically enable auto-approve for resolved PRs.\nValid values: true | false"
+    default: false
+
+  custom_guidelines:
+    type: object
+    description: "Name and path to review guidelines that you want bito to follow. \nThese files must exist in your source branch at review time.\nWe accept upto 3 general guidelines and 1 language specific guideline per language."
+    properties:
+      general:
+        type: array
+        items:
+          type: object
+          required: [name, path]
+          properties:
+            name:
+              type: string
+              description: Human-readable name for the guideline
+            path:
+              type: string
+              description: Path to the guideline file (relative to repo root)
+      per_language:
+        type: object
+        additionalProperties:
+          type: object
+          required: [name, path]
+          properties:
+            name:
+              type: string
+              description: Human-readable name for the guideline
+            path:
+              type: string
+              description: Path to the guideline file
+
+  pr_metadata_validation:
+    type: object
+    description: "Validate PR metadata (title, description, branch, labels, diff summary) against natural-language PR Hygiene guidelines.\nWorkspace-level guidelines are configured in QMM as custom guidelines tagged with programming language \"PR Hygiene\" — this block lets a repo override or supplement them.\nSet \"enabled: false\" to silence the feature for this repo even if the workspace has it on."
+    properties:
+      enabled:
+        type: boolean
+        description: "Turn PR metadata validation on/off for this repo. Valid values: true | false"
+        default: false
+      guidelines:
+        type: string
+        description: "Inline natural-language PR Hygiene guidelines. Overrides workspace QMM guidelines when present."
+      guidelines_path:
+        type: string
+        description: "Path to a markdown file (relative to repo root) containing PR Hygiene guidelines.\nUsed when \"guidelines\" is not supplied inline."
+      skip_bot_authors:
+        type: array
+        items:
+          type: string
+        description: "List of author logins to skip metadata validation for.\nGitHub app accounts ending in \"[bot]\" are skipped automatically.\nExample: [\"dependabot[bot]\", \"renovate[bot]\"]"
+      draft_handling:
+        type: string
+        enum: [review_with_notice, skip]
+        description: "How to handle draft PRs:\n- review_with_notice: review and prefix findings with a draft notice.\n- skip: do not review drafts at all.\nValid values: review_with_notice | skip"
+        default: review_with_notice
