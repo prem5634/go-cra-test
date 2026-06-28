@@ -43,3 +43,4 @@ files. Each CRA tool should surface multiple findings. Project **builds clean**
 - [ ] `go build ./...` passes
 - [ ] `go vet ./...`  ·  `gosec ./...`  ·  `gitleaks detect`
 - [ ] `osv-scanner --lockfile go.mod` (or `trivy fs .`)
+
