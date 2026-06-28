@@ -53,6 +53,44 @@ func (s *Store) List() []Task {
 	return out
 }
 
+// Stats returns (open, done) counts. NOTE: it reads s.tasks without taking
+// s.mu — a data race under concurrent writes (go test -race / code smell).
+func (s *Store) Stats() (int, int) {
+	open, done := 0, 0
+	for _, t := range s.tasks {
+		if t.Done {
+			done++
+		} else {
+			open++
+		}
+	}
+	return open, done
+}
+
+// Score is an over-complex, magic-number-laden ranker (high cyclomatic
+// complexity — gocyclo / code smell).
+func Score(age, prio int, urgent bool) int {
+	s := 0
+	if age > 30 {
+		if prio > 5 {
+			if urgent {
+				s = 100
+			} else {
+				s = 80
+			}
+		} else if prio > 2 {
+			s = 50
+		} else {
+			s = 20
+		}
+	} else if age > 7 {
+		s = 10
+	} else {
+		s = 1
+	}
+	return s
+}
+
 // Complete marks the task with the given id as done.
 func (s *Store) Complete(id int) (Task, error) {
 	s.mu.Lock()

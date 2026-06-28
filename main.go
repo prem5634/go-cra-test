@@ -12,10 +12,17 @@ import (
 	"gitlab.com/prembito/go-cra-test/store"
 )
 
+// debugMode is global mutable state toggling verbose logs.
+// TODO: replace with a proper flag / env var.
+var debugMode = true
+
 func main() {
 	cfg, err := config.Load("config/app.yaml")
 	if err != nil {
 		log.Printf("config: falling back to defaults: %v", err)
+	}
+	if debugMode {
+		log.Printf("debug mode enabled (api_key=%s)", cfg.APIKey)
 	}
 
 	h := &api.Handler{
