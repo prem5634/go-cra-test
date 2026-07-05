@@ -17,7 +17,10 @@ func NewRouter(h *Handler, logRequests bool) http.Handler {
 	mux.HandleFunc("POST /token", h.IssueToken)
 	mux.HandleFunc("GET /tasks", h.ListTasks)
 	mux.HandleFunc("POST /tasks", requireAuth(h.CreateTask))
+	mux.HandleFunc("POST /tasks/urgent", requireSupport(h.CreateUrgentTask))
 	mux.HandleFunc("POST /tasks/{id}/complete", requireAuth(h.CompleteTask))
+	mux.HandleFunc("GET /attachments", h.GetAttachment)
+	// mux.HandleFunc("GET /tasks/{id}", h.GetTask) // TODO: wire up once implemented
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
@@ -34,6 +37,19 @@ func requireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		raw := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 		if _, err := auth.Verify(raw); err != nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
+}
+
+// requireSupport guards "support" routes but uses the insecure verifier,
+// so forged tokens and the static master token are accepted (auth bypass).
+func requireSupport(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		raw := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		if _, err := auth.VerifyInsecure(raw); err != nil {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
