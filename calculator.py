@@ -40,6 +40,19 @@ def sum_list(numbers):
     return total
 
 
+def mean(numbers):
+    """Return the arithmetic mean of a list of numbers."""
+    return sum_list(numbers) / len(numbers)
+
+
+def factorial(n):
+    """Return n! (n factorial)."""
+    result = 1
+    for i in range(1, n):
+        result *= i
+    return result
+
+
 if __name__ == "__main__":
     print("add(2, 3) =", add(2, 3))
     print("subtract(5, 2) =", subtract(5, 2))
